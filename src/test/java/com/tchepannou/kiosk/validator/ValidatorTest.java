@@ -3,6 +3,7 @@ package com.tchepannou.kiosk.validator;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -14,12 +15,12 @@ public class ValidatorTest {
         final Rule r1 = mock(Rule.class);
         final Rule r2 = mock(Rule.class);
         final Rule r3 = mock(Rule.class);
-        ValidatorContext ctx = () -> Arrays.asList(r1, r2, r3);
+        ValidatorContext ctx =  createContext(r1, r2, r3);
 
         final Validable doc = mock(Validable.class);
-        when(r1.validate(doc)).thenReturn(Validation.success());
-        when(r2.validate(doc)).thenReturn(Validation.success());
-        when(r3.validate(doc)).thenReturn(Validation.success());
+        when(r1.validate(doc, ctx)).thenReturn(Validation.success());
+        when(r2.validate(doc, ctx)).thenReturn(Validation.success());
+        when(r3.validate(doc, ctx)).thenReturn(Validation.success());
 
         Validation result = new Validator().validate(doc, ctx);
 
@@ -31,15 +32,39 @@ public class ValidatorTest {
         final Rule r1 = mock(Rule.class);
         final Rule r2 = mock(Rule.class);
         final Rule r3 = mock(Rule.class);
-        ValidatorContext ctx = () -> Arrays.asList(r1, r2, r3);
+        ValidatorContext ctx = createContext(r1, r2, r3);
 
         final Validable doc = mock(Validable.class);
-        when(r1.validate(doc)).thenReturn(Validation.success());
-        when(r2.validate(doc)).thenReturn(Validation.failure("foo"));
-        when(r3.validate(doc)).thenReturn(Validation.success());
+        when(r1.validate(doc, ctx)).thenReturn(Validation.success());
+        when(r2.validate(doc, ctx)).thenReturn(Validation.failure("foo"));
+        when(r3.validate(doc, ctx)).thenReturn(Validation.success());
 
         Validation result = new Validator().validate(doc, ctx);
 
         assertThat(result).isEqualTo(Validation.failure("foo"));
+    }
+
+    private ValidatorContext createContext(Rule...rules){
+        return new ValidatorContext() {
+            @Override
+            public List<Rule> getRules() {
+                return Arrays.asList(rules);
+            }
+
+            @Override
+            public List<String> getLanguages() {
+                return null;
+            }
+
+            @Override
+            public int getContentMinLength() {
+                return 0;
+            }
+
+            @Override
+            public boolean alreadyPublished(final String id, final String title) {
+                return false;
+            }
+        };
     }
 }

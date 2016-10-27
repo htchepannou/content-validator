@@ -1,5 +1,5 @@
 package com.tchepannou.kiosk.validator;
 
 public interface Rule {
-    Validation validate(Validable doc);
+    Validation validate(Validable doc, ValidatorContext ctx);
 }

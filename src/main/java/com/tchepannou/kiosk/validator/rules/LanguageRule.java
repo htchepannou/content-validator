@@ -3,22 +3,15 @@ package com.tchepannou.kiosk.validator.rules;
 import com.tchepannou.kiosk.validator.Rule;
 import com.tchepannou.kiosk.validator.Validable;
 import com.tchepannou.kiosk.validator.Validation;
-
-import java.util.Collection;
+import com.tchepannou.kiosk.validator.ValidatorContext;
 
 public class LanguageRule implements Rule {
     public static final String REASON = "invalid_language";
 
-    private final Collection<String> languages;
-
-    public LanguageRule(final Collection<String> languages) {
-        this.languages = languages;
-    }
-
     @Override
-    public Validation validate(final Validable doc) {
+    public Validation validate(final Validable doc, final ValidatorContext context) {
         final String lang = doc.getLanguage();
-        return lang != null && languages.contains(lang)
+        return lang != null && context.getLanguages().contains(lang)
                 ? Validation.success()
                 : Validation.failure(REASON);
     }
